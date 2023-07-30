@@ -1,10 +1,7 @@
 import streamlit as st
 import pandas as pd
 from reg import newPrediction,readData
-import subprocess
-import sklearn
 data = readData()
-subprocess.run("pip install scikit-learn", shell=True)
 def main():
     st.title('Modelo de Predicción de Compras')
 
