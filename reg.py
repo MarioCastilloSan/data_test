@@ -1,7 +1,7 @@
 
 
 import pandas as pd 
-
+import sklearn
 data= pd.read_csv('Social_Network_Ads.csv')
 def readData():
     return data
