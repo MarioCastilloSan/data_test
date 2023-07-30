@@ -1,7 +1,36 @@
 import streamlit as st
 import pandas as pd
-from reg import newPrediction,readData
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.colors import ListedColormap
+from reg import newPrediction,readData,getDatatoPlot
 data = readData()
+
+def plot_decision_boundary(model, x, y, title):
+    # Código para generar el gráfico de dispersión y la frontera de decisión sin cambios
+    xSet, ySet = x, y
+    xSet_2d = np.column_stack((xSet[:, 0], xSet[:, 1]))  # Convertir a arreglo bidimensional
+
+    x1, x2 = np.meshgrid(np.arange(start=xSet_2d[:, 0].min() - 1, stop=xSet_2d[:, 0].max() + 1, step=0.01),
+                         np.arange(start=xSet_2d[:, 1].min() - 1, stop=xSet_2d[:, 1].max() + 1, step=0.01))
+    Z = model.predict(np.array([x1.ravel(), x2.ravel()]).T).reshape(x1.shape)
+
+    fig, ax = plt.subplots()
+    ax.contourf(x1, x2, Z, alpha=0.75, cmap=ListedColormap(('red', 'green')))
+    ax.set_xlim(x1.min(), x1.max())
+    ax.set_ylim(x2.min(), x2.max())
+
+    for i, j in enumerate(np.unique(ySet)):
+        ax.scatter(xSet[ySet == j, 0], xSet[ySet == j, 1],
+                   c=ListedColormap(['red', 'green'])(i), label=j)
+
+    plt.title(title)
+    plt.xlabel("Age")
+    plt.ylabel("Estimated Salary")
+    plt.legend()
+
+    st.pyplot(fig)
+
 def main():
     st.title('Modelo de Predicción de Compras')
 
@@ -33,6 +62,15 @@ def main():
     # Mostrar información relevante del conjunto de datos original
     st.header('Información relevante del conjunto de datos original:')
     st.write(data)
+
+    # Mostrar el gráfico de la frontera de decisión
+    xTrain,yTrain,naiveBayesModel = getDatatoPlot()
+    # Agregar controles deslizantes para ajustar los valores de Age y EstimatedSalary
+    age = st.slider('Edad', min_value=int(xTrain[:, 0].min()), max_value=int(xTrain[:, 0].max()), value=int(xTrain[:, 0].mean()))
+    estimated_salary = st.slider('Salario estimado', min_value=int(xTrain[:, 1].min()), max_value=int(xTrain[:, 1].max()), value=int(xTrain[:, 1].mean()))
+
+    # Mostrar el gráfico de la frontera de decisión con interactividad
+    plot_decision_boundary(naiveBayesModel, xTrain, yTrain, "Naive Bayes Classifier (Training Set)")
 
 
 if __name__ == '__main__':

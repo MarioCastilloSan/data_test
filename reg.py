@@ -37,5 +37,7 @@ def newPrediction(data):
     yPred = naiveBayesModel.predict(data)
     return yPred
 
+def getDatatoPlot():
+    return xTrain,yTrain,naiveBayesModel
 
 
